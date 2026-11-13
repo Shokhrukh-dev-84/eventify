@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: shokhrukh
+      comment: "Цель: Создание таблицы настроек уведомлений(notifications) для профилей пользователей."
+      #Детали: Создана таблица 'notifications' с флагами для типов уведомлений.
+      #Важные моменты: Используется связь One-to-one через общий первичный ключ.
+      #                 Внешный ключ(fk_notifications_user) связывает 'user_id' с 'users(id).
+      changes:
+        - createTable:
+            tableName: notifications
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk_notifications_user
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: notify_new_events
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notify_upcoming
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notify_before_hours
+                  type: int
+                  defaultValueNumeric: 24
+                  constraints:
+                    nullable: true

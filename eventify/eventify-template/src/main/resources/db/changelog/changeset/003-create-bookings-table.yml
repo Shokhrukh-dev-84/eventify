@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: shokhrukh
+      comment: "Цель: Создание таблицы бронирований(bookings)"
+      #Детали: Создана таблица 'bookings' с базовыми полями id, ticket_count(количество мест), created_at(дата и время создания брони),
+      #expire_time(дата, до которой бронирование должно быть подтверждено), timezone(тайм зона), confirmed(признак подтверждения бронирования),
+      #Важные моменты: Реализованы два внешных ключа:
+      #             1) fk_user_booking - связывает поле user_id с таблицей users(id).
+      #             2) fk_event_booking - связывает поле event_id с таблицей events(event_id)
+      changes:
+        - createTable:
+            tableName: bookings
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: ticket_count
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expire_time
+                  type: timestamp
+              - column:
+                  name: timezone
+                  type: varchar(50)
+              - column:
+                  name: confirmed
+                  type: boolean
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_booking
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: event_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_event_booking
+                    referencedTableName: events
+                    referencedColumnNames: event_id
+
+        - createIndex:
+            indexName: idx_bookings_user
+            tableName: bookings
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_bookings_event
+            tableName: bookings
+            columns:
+              - column:
+                  name: event_id
+

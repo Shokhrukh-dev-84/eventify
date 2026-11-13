@@ -16,6 +16,7 @@
 
 - **React 18** с TypeScript
 - **React Router** для навигации
+- 
 - **React Hook Form** с Yup для валидации форм
 - **Axios** для HTTP-запросов
 - **Tailwind CSS** для стилизации

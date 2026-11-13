@@ -16,6 +16,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/yup": "^0.29.14",
     "axios": "^1.10.0",
+    "cross-env": "^10.1.0",
     "lucide-react": "^0.523.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -38,7 +39,7 @@
     "docker:build": "docker-compose build",
     "docker:logs": "docker-compose logs -f",
     "start:mocks": "REACT_APP_USE_MOCKS=true npm start",
-    "start:backend": "REACT_APP_API_URL=http://localhost:8080 REACT_APP_USE_MOCKS=false npm start"
+    "start:backend": "cross-env REACT_APP_API_URL=http://localhost:8080 REACT_APP_USE_MOCKS=false npm start"
   },
   "eslintConfig": {
     "extends": [

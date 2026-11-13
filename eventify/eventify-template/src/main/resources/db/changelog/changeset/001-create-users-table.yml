@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: shokhrukh
+      comment: "Цель : Инициализация схемы БД и создание базовой таблицы пользователей."
+      # Детали: Создание таблицы 'users' с полями id, email, password, role и tg_link_token.
+      # Важные моменты: Поле email уникально (nullable: false), Пароли будут хранится в виде хешей varchar(60).
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tg_link_token
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: role
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_users_role
+            tableName: users
+            columns:
+              - column:
+                  name: role
+
+        - createIndex:
+            indexName: idx_users_tg_token
+            tableName: users
+            columns:
+                - column:
+                    name: tg_link_token
