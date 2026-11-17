@@ -68,7 +68,7 @@ public class BookingService {
     @Caching(
             evict = {
                     @CacheEvict(value = "bookings", key = "#id"),
-                    @CacheEvict(value = "bookingList", allEntries = true)
+                    @CacheEvict(value = "bookingsList", allEntries = true)
             }
     )
     public BookingResponse bookingsIdPut(Long id, UpdateBookingRequest request) {
@@ -98,7 +98,7 @@ public class BookingService {
     @Caching(
             evict = {
                     @CacheEvict(value = "bookings", key = "#id"),
-                    @CacheEvict(value = "bookingList", allEntries = true)
+                    @CacheEvict(value = "bookingsList", allEntries = true)
             }
     )
     public void bookingsIdDelete(Long id) {
@@ -108,6 +108,7 @@ public class BookingService {
         Event event = currentBooking.getEvent();
         event.setAvailableTickets(event.getAvailableTickets() + returnTicketsCount);
 
+        eventRepository.save(event);
         log.info("Пользователь {} удалил своё бронирование с ID: {}. Возвращено билетов: {} на мероприятие: {}",
                 currentBooking.getUser().getUsername(),
                 currentBooking.getId(),
@@ -123,7 +124,7 @@ public class BookingService {
         User currentUser = SecurityUtils.getCurrentUser().orElseThrow(
                 () -> new UserNotAuthenticatedException("Пользователь не найден")
         );
-        Event event = eventRepository.findById(request.getEventId()).orElseThrow(() ->
+        Event event = eventRepository.findByIdWithLock(request.getEventId()).orElseThrow(() ->
                 new EntityNotFoundException("Мероприятие не найдено!"));
         if(event.getAvailableTickets() < request.getTicketCount()) {
             throw new IllegalArgumentException("Недостаточно билетов");
@@ -149,7 +150,6 @@ public class BookingService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void adminBookingsIdConfirm(Long id) {
-        System.out.println("ADM CONFIRMED");
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Бронирование с ID " + id + " не найдено!"));
         if(booking.getExpiryTime().isBefore(LocalDateTime.now())) {
@@ -174,17 +174,21 @@ public class BookingService {
     @Caching(
             evict = {
                     @CacheEvict(value = "bookings", key = "#id"),
-                    @CacheEvict(value = "bookingList", allEntries = true)
+                    @CacheEvict(value = "bookingsList", allEntries = true)
             }
     )
     public void adminBookingsIdDelete(Long id) {
-        System.out.println("ADM DELETE BOOK");
         Booking booking = bookingRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Бронирование по ID: " + id + " не найдено")
         );
         if(booking.getConfirmed()) {
             throw new IllegalStateException("Нельзя удалит бронирование со статусом 'подтверждён'!");
         }
+
+        Event event = booking.getEvent();
+        int updateAvailableTickets = event.getAvailableTickets() + booking.getTicketCount();
+        event.setAvailableTickets(updateAvailableTickets);
+        eventRepository.save(event);
         bookingRepository.delete(booking);
         log.info("Администратор успешно удалил бронирование с ID: {}", id);
     }

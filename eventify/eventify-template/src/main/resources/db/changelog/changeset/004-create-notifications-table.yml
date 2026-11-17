@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 3
+      id: 4
       author: shokhrukh
       comment: "Цель: Создание таблицы настроек уведомлений(notifications) для профилей пользователей."
       #Детали: Создана таблица 'notifications' с флагами для типов уведомлений.

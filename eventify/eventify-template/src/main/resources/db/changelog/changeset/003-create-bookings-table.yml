@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 4
+      id: 3
       author: shokhrukh
       comment: "Цель: Создание таблицы бронирований(bookings)"
       #Детали: Создана таблица 'bookings' с базовыми полями id, ticket_count(количество мест), created_at(дата и время создания брони),
